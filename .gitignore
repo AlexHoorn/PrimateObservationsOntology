@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+geonames/hierarchy.txt
+geonames/allCountries.txt
