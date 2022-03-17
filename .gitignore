@@ -129,5 +129,5 @@ dmypy.json
 .pyre/
 
 
-geonames/hierarchy.txt
-geonames/allCountries.txt
+hierarchy.txt
+allCountries.txt
