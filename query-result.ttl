@@ -1,0 +1,193 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf4j: <http://rdf4j.org/schema/rdf4j#> .
+@prefix sesame: <http://www.openrdf.org/schema/sesame#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix fn: <http://www.w3.org/2005/xpath-functions#> .
+
+<http://purl.obolibrary.org/obo/NCBITaxon_9443> a owl:Class .
+
+<http://purl.obolibrary.org/obo/NCBITaxon_9604> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCBITaxon_9443> .
+
+<http://purl.obolibrary.org/obo/NCBITaxon_207598> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCBITaxon_9604> .
+
+<http://purl.obolibrary.org/obo/NCBITaxon_9606> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCBITaxon_207598>,
+    <http://purl.obolibrary.org/obo/NCBITaxon_314293>, <http://purl.obolibrary.org/obo/NCBITaxon_9443>,
+    <http://purl.obolibrary.org/obo/NCBITaxon_9526>, <http://purl.obolibrary.org/obo/NCBITaxon_9605> .
+
+<http://purl.obolibrary.org/obo/NCIT_C27954> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCBITaxon_9606> .
+
+<http://purl.obolibrary.org/obo/GSSO_001462> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCIT_C27954> .
+
+<http://purl.obolibrary.org/obo/GSSO_001463> rdfs:subClassOf <http://purl.obolibrary.org/obo/GSSO_001462> .
+
+<http://purl.obolibrary.org/obo/GSSO_001464> rdfs:subClassOf <http://purl.obolibrary.org/obo/GSSO_001462> .
+
+<http://purl.obolibrary.org/obo/NCBITaxon_376913> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCBITaxon_9443> .
+
+<http://purl.obolibrary.org/obo/NCBITaxon_314293> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCBITaxon_376913>,
+    <http://purl.obolibrary.org/obo/NCBITaxon_9443> .
+
+<http://purl.obolibrary.org/obo/GSSO_001465> rdfs:subClassOf <http://purl.obolibrary.org/obo/GSSO_001464> .
+
+<http://purl.obolibrary.org/obo/GSSO_001467> rdfs:subClassOf <http://purl.obolibrary.org/obo/GSSO_001465>,
+    <http://purl.obolibrary.org/obo/GSSO_001466> .
+
+<http://purl.obolibrary.org/obo/GSSO_004514> rdfs:subClassOf <http://purl.obolibrary.org/obo/GSSO_001465> .
+
+<http://purl.obolibrary.org/obo/GSSO_001466> rdfs:subClassOf <http://purl.obolibrary.org/obo/GSSO_001464> .
+
+<http://purl.obolibrary.org/obo/GSSO_001468> rdfs:subClassOf <http://purl.obolibrary.org/obo/GSSO_001466> .
+
+<http://purl.obolibrary.org/obo/GSSO_011104> rdfs:subClassOf <http://purl.obolibrary.org/obo/GSSO_001466> .
+
+<http://purl.obolibrary.org/obo/GSSO_004533> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCIT_C27954> .
+
+<http://purl.obolibrary.org/obo/GSSO_001471> rdfs:subClassOf <http://purl.obolibrary.org/obo/GSSO_004533> .
+
+<http://purl.obolibrary.org/obo/GSSO_004534> rdfs:subClassOf <http://purl.obolibrary.org/obo/GSSO_004533> .
+
+<http://purl.obolibrary.org/obo/GSSO_004535> rdfs:subClassOf <http://purl.obolibrary.org/obo/GSSO_004533> .
+
+<http://purl.obolibrary.org/obo/OPMI_0000417> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCBITaxon_9606> .
+
+<http://purl.obolibrary.org/obo/CIDO_0000419> rdfs:subClassOf <http://purl.obolibrary.org/obo/OPMI_0000417> .
+
+<http://purl.obolibrary.org/obo/CIDO_0000420> rdfs:subClassOf <http://purl.obolibrary.org/obo/CIDO_0000419> .
+
+<http://purl.obolibrary.org/obo/CIDO_0000421> rdfs:subClassOf <http://purl.obolibrary.org/obo/CIDO_0000419> .
+
+<http://purl.obolibrary.org/obo/CIDO_0000422> rdfs:subClassOf <http://purl.obolibrary.org/obo/CIDO_0000419> .
+
+<http://purl.obolibrary.org/obo/NCIT_C48355> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCBITaxon_9606> .
+
+<http://purl.obolibrary.org/obo/NCIT_C70793> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCIT_C48355> .
+
+<http://purl.obolibrary.org/obo/NCIT_C70794> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCIT_C70793> .
+
+<http://purl.obolibrary.org/obo/NCIT_C70795> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCIT_C70793> .
+
+<http://purl.obolibrary.org/obo/CIDO_0000290> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCBITaxon_9606> .
+
+<http://purl.obolibrary.org/obo/CIDO_0000291> rdfs:subClassOf <http://purl.obolibrary.org/obo/CIDO_0000290> .
+
+<http://purl.obolibrary.org/obo/CIDO_0000295> rdfs:subClassOf <http://purl.obolibrary.org/obo/CIDO_0000291> .
+
+<http://purl.obolibrary.org/obo/CIDO_0000292> rdfs:subClassOf <http://purl.obolibrary.org/obo/CIDO_0000290> .
+
+<http://purl.obolibrary.org/obo/CIDO_0000293> rdfs:subClassOf <http://purl.obolibrary.org/obo/CIDO_0000292> .
+
+<http://purl.obolibrary.org/obo/CIDO_0000294> rdfs:subClassOf <http://purl.obolibrary.org/obo/CIDO_0000292> .
+
+<http://purl.obolibrary.org/obo/CIDO_0000296> rdfs:subClassOf <http://purl.obolibrary.org/obo/CIDO_0000290> .
+
+<http://purl.obolibrary.org/obo/CIDO_0000297> rdfs:subClassOf <http://purl.obolibrary.org/obo/CIDO_0000296> .
+
+<http://purl.obolibrary.org/obo/OHD_0000179> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCBITaxon_9606> .
+
+<http://purl.obolibrary.org/obo/OHD_0000051> rdfs:subClassOf <http://purl.obolibrary.org/obo/OHD_0000179> .
+
+<http://purl.obolibrary.org/obo/OHD_0000018> rdfs:subClassOf <http://purl.obolibrary.org/obo/OHD_0000051> .
+
+<http://purl.obolibrary.org/obo/OHD_0000020> rdfs:subClassOf <http://purl.obolibrary.org/obo/OHD_0000051> .
+
+<http://purl.obolibrary.org/obo/OHD_0000181> rdfs:subClassOf <http://purl.obolibrary.org/obo/OHD_0000051> .
+
+<http://purl.obolibrary.org/obo/OHD_0000210> rdfs:subClassOf <http://purl.obolibrary.org/obo/OHD_0000051> .
+
+<http://purl.obolibrary.org/obo/VICO_0000016> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCBITaxon_9606> .
+
+<http://purl.obolibrary.org/obo/VICO_0000023> rdfs:subClassOf <http://purl.obolibrary.org/obo/VICO_0000016> .
+
+<http://purl.obolibrary.org/obo/VICO_0000257> rdfs:subClassOf <http://purl.obolibrary.org/obo/VICO_0000023> .
+
+<http://purl.obolibrary.org/obo/ONTONEO_00000157> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCBITaxon_9606> .
+
+<http://purl.obolibrary.org/obo/ONTONEO_00000197> rdfs:subClassOf <http://purl.obolibrary.org/obo/ONTONEO_00000157> .
+
+<http://purl.obolibrary.org/obo/ONTONEO_00000196> rdfs:subClassOf <http://purl.obolibrary.org/obo/ONTONEO_00000197> .
+
+<http://purl.obolibrary.org/obo/ONTONEO_00000201> rdfs:subClassOf <http://purl.obolibrary.org/obo/ONTONEO_00000197> .
+
+<http://purl.obolibrary.org/obo/ONTONEO_00000202> rdfs:subClassOf <http://purl.obolibrary.org/obo/ONTONEO_00000197> .
+
+<http://purl.obolibrary.org/obo/OPMI_0000163> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCBITaxon_9606> .
+
+<http://purl.obolibrary.org/obo/OPMI_0000166> rdfs:subClassOf <http://purl.obolibrary.org/obo/OPMI_0000163> .
+
+<http://purl.obolibrary.org/obo/OPMI_0000251> rdfs:subClassOf <http://purl.obolibrary.org/obo/OPMI_0000166> .
+
+<http://purl.obolibrary.org/obo/OPMI_0000381> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCBITaxon_9606> .
+
+<http://purl.obolibrary.org/obo/OPMI_0000437> rdfs:subClassOf <http://purl.obolibrary.org/obo/OPMI_0000381> .
+
+<http://purl.obolibrary.org/obo/OPMI_0000436> rdfs:subClassOf <http://purl.obolibrary.org/obo/OPMI_0000437> .
+
+<http://purl.obolibrary.org/obo/NCIT_C17600> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCBITaxon_9606> .
+
+<http://purl.obolibrary.org/obo/GSSO_001474> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCIT_C17600> .
+
+<http://purl.obolibrary.org/obo/GSSO_001475> rdfs:subClassOf <http://purl.obolibrary.org/obo/GSSO_001474> .
+
+<http://purl.obolibrary.org/obo/GSSO_001476> rdfs:subClassOf <http://purl.obolibrary.org/obo/GSSO_001474> .
+
+<http://purl.obolibrary.org/obo/NCIT_C16423> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCBITaxon_9606> .
+
+<http://purl.obolibrary.org/obo/GSSO_004511> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCIT_C16423> .
+
+<http://purl.obolibrary.org/obo/GSSO_004512> rdfs:subClassOf <http://purl.obolibrary.org/obo/GSSO_004511> .
+
+<http://purl.obolibrary.org/obo/GSSO_006366> rdfs:subClassOf <http://purl.obolibrary.org/obo/GSSO_004511> .
+
+<http://purl.obolibrary.org/obo/GSSO_006080> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCIT_C16423> .
+
+<http://purl.obolibrary.org/obo/GSSO_006081> rdfs:subClassOf <http://purl.obolibrary.org/obo/GSSO_006080> .
+
+<http://purl.obolibrary.org/obo/GSSO_007411> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCIT_C16423> .
+
+<http://purl.obolibrary.org/obo/GSSO_001961> rdfs:subClassOf <http://purl.obolibrary.org/obo/GSSO_007411> .
+
+<http://purl.obolibrary.org/obo/GSSO_007689> rdfs:subClassOf <http://purl.obolibrary.org/obo/GSSO_007411> .
+
+<http://purl.obolibrary.org/obo/GSSO_001477> rdfs:subClassOf <http://purl.obolibrary.org/obo/GSSO_001476> .
+
+<http://purl.obolibrary.org/obo/GSSO_004537> rdfs:subClassOf <http://purl.obolibrary.org/obo/GSSO_004534> .
+
+<http://purl.obolibrary.org/obo/GSSO_002387> rdfs:subClassOf <http://purl.obolibrary.org/obo/GSSO_004535> .
+
+<http://purl.obolibrary.org/obo/GSSO_004536> rdfs:subClassOf <http://purl.obolibrary.org/obo/GSSO_004535> .
+
+<http://purl.obolibrary.org/obo/GSSO_006367> rdfs:subClassOf <http://purl.obolibrary.org/obo/GSSO_006366> .
+
+<http://purl.obolibrary.org/obo/GSSO_006368> rdfs:subClassOf <http://purl.obolibrary.org/obo/GSSO_006366> .
+
+<http://purl.obolibrary.org/obo/GSSO_006369> rdfs:subClassOf <http://purl.obolibrary.org/obo/GSSO_006366> .
+
+<http://purl.obolibrary.org/obo/NCBITaxon_9526> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCBITaxon_314293> .
+
+<http://purl.obolibrary.org/obo/IDO_0100091> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCBITaxon_9606> .
+
+<http://purl.obolibrary.org/obo/IDO_0100423> rdfs:subClassOf <http://purl.obolibrary.org/obo/IDO_0100091> .
+
+<http://purl.obolibrary.org/obo/NCBITaxon_9605> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCBITaxon_207598> .
+
+<http://purl.obolibrary.org/obo/NCIT_C16731> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCBITaxon_9606> .
+
+<http://purl.obolibrary.org/obo/NCIT_C114930> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCIT_C16731> .
+
+<http://purl.obolibrary.org/obo/NCIT_C114931> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCIT_C16731> .
+
+<http://purl.obolibrary.org/obo/NCIT_C114938> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCIT_C16731> .
+
+<http://purl.obolibrary.org/obo/NCIT_C114939> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCIT_C16731> .
+
+<http://purl.obolibrary.org/obo/NCIT_C114947> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCIT_C16731> .
+
+<http://purl.obolibrary.org/obo/NCIT_C118677> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCIT_C16731> .
+
+<http://purl.obolibrary.org/obo/NCIT_C128042> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCIT_C16731> .
+
+<http://purl.obolibrary.org/obo/NCIT_C49642> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCIT_C16731> .
+
+<http://purl.obolibrary.org/obo/NCIT_C89333> rdfs:subClassOf <http://purl.obolibrary.org/obo/NCIT_C16731> .
