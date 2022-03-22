@@ -1,0 +1,9 @@
+https://query.wikidata.org/#SELECT%20%2a%20WHERE%20%7B%0A%20%20SERVICE%20wikibase%3Alabel%20%7B%20bd%3AserviceParam%20wikibase%3Alanguage%20%22%5BAUTO_LANGUAGE%5D%2Cen%22.%20%7D%0A%20%20OPTIONAL%20%7B%20%3Fitem%20wdt%3AP3151%20%3FiNaturalist_taxon_ID.%20%7D%0A%20%20OPTIONAL%20%7B%20%3Fitem%20wdt%3AP846%20%3FGBIF_taxon_ID.%20%7D%0A%20%20OPTIONAL%20%7B%20%3Fitem%20wdt%3AP815%20%3FITIS_TSN.%20%7D%0A%20%20OPTIONAL%20%7B%20%3Fitem%20wdt%3AP685%20%3FNCBI_taxonomy_ID.%20%7D%0A%7D
+
+SELECT * WHERE {
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+  OPTIONAL { ?item wdt:P3151 ?iNaturalist_taxon_ID. }
+  OPTIONAL { ?item wdt:P846 ?GBIF_taxon_ID. }
+  OPTIONAL { ?item wdt:P815 ?ITIS_TSN. }
+  OPTIONAL { ?item wdt:P685 ?NCBI_taxonomy_ID. }
+}
