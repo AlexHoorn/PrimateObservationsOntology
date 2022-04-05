@@ -1,0 +1,245 @@
+###NV: import this into OntoRefine to get a proper view of the mapping. 
+# mappings mostly use terms from DarwinCore, geostuff is still unfinished
+
+{
+  "baseIRI": "",
+  "namespaces": {
+    "ex": "http://example.org/",
+    "geo": "http://www.opengis.net/ont/geosparql#",
+    "sf": "http://www.opengis.net/ont/sf#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "dwc": "http://rs.tdwg.org/dwc/terms/",
+    "inat": "https://www.inaturalist.org/",
+    "gn": "https://www.geonames.org/ontology#",
+    "gn_resource": "https://sws.geonames.org/",
+    "dc": "http://purl.org/dc/terms/"
+  },
+  "subjectMappings": [
+    {
+      "propertyMappings": [
+        {
+          "property": {
+            "transformation": {
+              "expression": "dwc",
+              "language": "prefix"
+            },
+            "valueSource": {
+              "source": "constant",
+              "constant": "occurrenceID"
+            }
+          },
+          "values": [
+            {
+              "valueSource": {
+                "columnName": "NCBI_Taxon_ID",
+                "source": "column"
+              },
+              "valueType": {
+                "type": "literal"
+              }
+            }
+          ]
+        },
+        {
+          "property": {
+            "transformation": {
+              "expression": "geo",
+              "language": "prefix"
+            },
+            "valueSource": {
+              "source": "constant",
+              "constant": "hasGeometry"
+            }
+          },
+          "values": [
+            {
+              "transformation": {
+                "expression": "ex:geometry/",
+                "language": "prefix"
+              },
+              "valueSource": {
+                "columnName": "id",
+                "source": "column"
+              },
+              "valueType": {
+                "propertyMappings": [
+                  {
+                    "property": {
+                      "transformation": {
+                        "expression": "geo",
+                        "language": "prefix"
+                      },
+                      "valueSource": {
+                        "source": "constant",
+                        "constant": "asWKT"
+                      }
+                    },
+                    "values": [
+                      {
+                        "transformation": {
+                          "expression": "\"http://www.opengis.net/def/crs/OGC/1.3/CRS84 POINT (\" + cells[\"longitude\"].value.replace(',', '.') + \" \" + cells[\"latitude\"].value.replace(',', '.')  + \")\"",
+                          "language": "grel"
+                        },
+                        "valueSource": {
+                          "source": "row_index"
+                        },
+                        "valueType": {
+                          "type": "datatype_literal",
+                          "datatype": {
+                            "transformation": {
+                              "expression": "geo",
+                              "language": "prefix"
+                            },
+                            "valueSource": {
+                              "source": "constant",
+                              "constant": "asWKT"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "type": "iri",
+                "typeMappings": [
+                  {
+                    "transformation": {
+                      "expression": "sf",
+                      "language": "prefix"
+                    },
+                    "valueSource": {
+                      "source": "constant",
+                      "constant": "Point"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "property": {
+            "transformation": {
+              "expression": "dwc",
+              "language": "prefix"
+            },
+            "valueSource": {
+              "source": "constant",
+              "constant": "eventDate"
+            }
+          },
+          "values": [
+            {
+              "valueSource": {
+                "columnName": "observed_on",
+                "source": "column"
+              },
+              "valueType": {
+                "type": "datatype_literal",
+                "datatype": {
+                  "transformation": {
+                    "expression": "xsd",
+                    "language": "prefix"
+                  },
+                  "valueSource": {
+                    "source": "constant",
+                    "constant": "date"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "property": {
+            "transformation": {
+              "expression": "dwc",
+              "language": "prefix"
+            },
+            "valueSource": {
+              "source": "constant",
+              "constant": "recordedByID"
+            }
+          },
+          "values": [
+            {
+              "transformation": {
+                "expression": "inat:people/",
+                "language": "prefix"
+              },
+              "valueSource": {
+                "columnName": "user_id",
+                "source": "column"
+              },
+              "valueType": {
+                "propertyMappings": [],
+                "type": "iri",
+                "typeMappings": []
+              }
+            }
+          ]
+        },
+        {
+          "property": {
+            "transformation": {
+              "expression": "dwc",
+              "language": "prefix"
+            },
+            "valueSource": {
+              "source": "constant",
+              "constant": "locationID"
+            }
+          },
+          "values": [
+            {
+              "transformation": {
+                "expression": "gn_resource",
+                "language": "prefix"
+              },
+              "valueSource": {
+                "columnName": "geonameid",
+                "source": "column"
+              },
+              "valueType": {
+                "propertyMappings": [],
+                "type": "iri",
+                "typeMappings": [
+                  {
+                    "transformation": {
+                      "expression": "gn",
+                      "language": "prefix"
+                    },
+                    "valueSource": {
+                      "source": "constant",
+                      "constant": "Location"
+                    }
+                  },
+                  {
+                    "transformation": {
+                      "expression": "dc",
+                      "language": "prefix"
+                    },
+                    "valueSource": {
+                      "source": "constant",
+                      "constant": "Location"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "subject": {
+        "transformation": {
+          "language": "raw"
+        },
+        "valueSource": {
+          "columnName": "url",
+          "source": "column"
+        }
+      },
+      "typeMappings": []
+    }
+  ]
+}

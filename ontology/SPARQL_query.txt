@@ -1,0 +1,77 @@
+PREFIX ex: <http://example.org/>
+PREFIX dc: <http://purl.org/dc/terms/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX sf: <http://www.opengis.net/ont/sf#>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX dwc: <http://rs.tdwg.org/dwc/terms/>
+PREFIX gn: <http://www.geonames.org/ontology#>
+PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
+prefix skos: <http://www.w3.org/2004/02/skos/core#>
+
+### note: this query assumes you have the ncbi taxonomy saved into the named graph <http://ex.org/graph1>, and the observations ttl file as <http://ex.org/triples_full>. It will merge the two graphs into <http://ex.org/merged_graph>
+
+DROP GRAPH <http://ex.org/merged_graph> ; #delete prev
+CREATE GRAPH <http://ex.org/merged_graph>; #init empty graph
+COPY <http://ex.org/graph1> TO <http://ex.org/merged_graph>; # copy ncbi taxonomy into it
+INSERT { GRAPH <http://ex.org/merged_graph> { # and also insert newly created obs data into new graph
+
+        #insert attributes of observations, and attribute them to the right NCBI taxon
+        ?obs a ?class;
+             dwc:occurrenceID ?obs_id;
+             dwc:eventDate ?date;
+             dwc:recordedByID ?user ;
+             geo:hasGeometry ?geo ;
+             dwc:locationID ?gn_id.
+        
+        #specify coords of Point
+        ?geo a sf:Point;
+             geo:asWKT ?coord .
+        
+        #specify that geonames ID is a geonames Location (maybe redundant)
+        ?geo_id a gn:Location;
+                a dc:Location.
+
+        #also define equivalent classes using SKOS, if applicable
+        ?class skos:exactMatch ?wikidata_entity.
+        ?class skos:exactMatch ?iNaturalist_taxon_ID.
+        ?class skos:exactMatch ?GBIF_taxon_ID.
+        ?class skos:exactMatch ?ITIS_TSN.
+
+    }
+}
+WHERE { 
+    GRAPH <http://ex.org/triples_full> {
+        ?obs a ?class;
+             dwc:occurrenceID ?obs_id;
+             dwc:eventDate ?date;
+             dwc:recordedByID ?user ;
+             geo:hasGeometry ?geo ;
+             dwc:locationID ?gn_id.
+       
+        ?geo a sf:Point;
+             geo:asWKT ?coord .
+        
+        ?geo_id a gn:Location;
+                a dc:Location.
+    }
+    ?class rdf:type owl:Class; # get all classes in NCBI taxonomy
+           oboInOwl:id ?class_id.  #get their ID 
+    BIND (REPLACE(?class_id, "\\D+", "") AS ?number1) #replace class id with only numeric part of class id
+    FILTER(?obs_id = ?number1)
+
+    #search for equivalent taxon in Wikidata, via ncbi ID
+    OPTIONAL { SERVICE <https://query.wikidata.org/sparql> {
+            ?wikidata_entity wdt:P685 ?wd_NCBI_id
+            OPTIONAL { ?wikidata_entity wdt:P3151 ?iNaturalist_taxon_ID. }
+            OPTIONAL { ?wikidata_entity wdt:P846 ?GBIF_taxon_ID. }
+            OPTIONAL { ?wikidata_entity wdt:P815 ?ITIS_TSN. }
+            FILTER(?wd_NCBI_id = ?number1)
+            
+            #TODO: also service query bioportal, to get SNOMED equivalent classes. And get COL ids?
+        }
+    }
+}
+#NOTE: graphdb viewer will only show 1000 results, but the full output contains more. So you have to export as turtle, and then load it in Protege or smthn
