@@ -1,0 +1,4 @@
+pandas == 1.4.2
+rdflib == 6.1.1
+streamlit == 1.8.1
+SPARQLWrapper == 2.0.0
