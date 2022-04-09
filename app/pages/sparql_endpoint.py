@@ -1,41 +1,50 @@
-import pandas as pd
-from SPARQLWrapper import QueryResult, SPARQLWrapper, JSON
+#import pandas as pd
+#from SPARQLWrapper import QueryResult, SPARQLWrapper, JSON
 import streamlit as st
+from .utils import sparql_query_df
     
 
-def print_query_result(res_obj:QueryResult) ->None:
-    json_res = res_obj.convert()
-    df_dict = {}
+#def print_query_result(res_obj:QueryResult) ->None:
+#    json_res = res_obj.convert()
+#    df_dict = {}
+#
+#    json_res2 = json_res['results']['bindings']
+#    
+#    for res_var in json_res2[0].keys():
+#        df_dict[res_var] = []
+#
+#    for i in range(len(json_res2)):
+#        for res_var in json_res2[i].keys():
+#            df_dict[res_var].append(json_res2[i][res_var]['value'])
+#    
+#    df_res = pd.DataFrame(df_dict)
+#
+#    st.dataframe(df_res)
 
-    json_res2 = json_res['results']['bindings']
+def query_db_callback(qry:str) -> None:
     
-    for res_var in json_res2[0].keys():
-        df_dict[res_var] = []
+    #sparql_con.setQuery(qry)
+    #try:
+    #    res_obj = sparql_con.query()
+    #    print_query_result(res_obj)
+    #
+    #except:
+    #    st.write("Query Execution Error!")
 
-    for i in range(len(json_res2)):
-        for res_var in json_res2[i].keys():
-            df_dict[res_var].append(json_res2[i][res_var]['value'])
-    
-    df_res = pd.DataFrame(df_dict)
-
-    st.dataframe(df_res)
-
-def query_db_callback(qry:str,sparql_con:SPARQLWrapper) -> None:
-    
-    sparql_con.setQuery(qry)
     try:
-        res_obj = sparql_con.query()
-        print_query_result(res_obj)
-    
+        res_obj = sparql_query_df(qry)
+        st.dataframe(res_obj)
+        print(res_obj.describe())
     except:
-        st.write("Query Execution Error!")
+        st.write("Check your SPARQL query for errors!")
+
     
 def sparql_endpoint() -> None:
     
-    end_point_url = "https://api.krr.triply.cc/datasets/NathanV/KRWprimatestaxonomy/services/KRWprimatestaxonomy/sparql" #SPARQL Endpoint URL
+    #end_point_url = "https://api.krr.triply.cc/datasets/NathanV/KRWprimatestaxonomy/services/KRWprimatestaxonomy/sparql" #SPARQL Endpoint URL
 
-    sparql_con = SPARQLWrapper(end_point_url)
-    sparql_con.setReturnFormat(JSON)
+    #sparql_con = SPARQLWrapper(end_point_url)
+    #sparql_con.setReturnFormat(JSON)
 
     with st.form("sparql_endpoint_form"):
     
@@ -43,6 +52,6 @@ def sparql_endpoint() -> None:
 
         submitted = st.form_submit_button(label="Try the Query!")
         if (submitted):
-            query_db_callback(qry,sparql_con)
+            query_db_callback(qry)
 
     return
