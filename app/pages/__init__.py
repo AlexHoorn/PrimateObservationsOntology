@@ -9,7 +9,7 @@ from .observations_count import page_observations_count
 pages: Dict[str, Callable] = {
     "🏠 Homepage": page_home,
     "📊 Observation counts": page_observations_count,
-    "Distribution of Observations": distribution_obs
+    "Distribution of Observations": distribution_obs,
     "🧪 Query test": page_query_test,
     "🔬 Sparql Endpoint": sparql_endpoint,
 }
