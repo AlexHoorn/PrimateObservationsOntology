@@ -1,0 +1,52 @@
+PREFIX dc: <http://purl.org/dc/terms/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX sf: <http://www.opengis.net/ont/sf#>
+PREFIX dwc: <http://rs.tdwg.org/dwc/terms/>
+PREFIX gn: <https://www.geonames.org/ontology#>
+prefix skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
+
+### note: this query assumes you have the ncbi taxonomy saved into the named graph <http://ex.org/graph1>, the wikidata class equivalences in <http://ex.org/wikidata> and the observations ttl file as <http://ex.org/triples_full>. It will merge the graphs into <http://ex.org/merged_graph>
+
+#graph operations like these tend to get stuck. If they do, run copy, add and insert separately
+
+INSERT { 
+    GRAPH <http://ex.org/merged_graph2> {
+        #insert attributes of observations, and attribute them to the right NCBI taxon
+        ?obs a dwc:Occurrence, ?class;
+             dwc:occurrenceID ?obs_id;
+             dwc:eventDate ?date;
+             dwc:recordedByID ?user ;
+             dwc:locationID ?gn_id;
+             dwc:decimalLatitude ?lat;
+             dwc:decimalLongitude ?long.
+
+        #specify that geonames ID is a geonames Location (maybe redundant)
+        ?gn_id a dc:Location, gn:Location.
+    }
+}
+WHERE { GRAPH <http://ex.org/triples_full> {
+        ?obs a dwc:Occurrence;
+             dwc:occurrenceID ?obs_id;
+             dwc:eventDate ?date;
+             dwc:recordedByID ?user ;
+             dwc:locationID ?gn_id;
+             dwc:decimalLatitude ?lat;
+             dwc:decimalLongitude ?long.
+
+        ?gn_id a dc:Location, gn:Location .
+
+        #from the id, construct complete identifier to match NCBI syntax
+        BIND(CONCAT("NCBITaxon:", ?obs_id) as ?classid)
+    }
+
+    graph <http://ex.org/graph1> {
+        ?class rdf:type owl:Class; # get all classes in NCBI taxonomy
+               oboInOwl:id ?classid.  #ID must match with the class id defined above
+    }
+}
+
+#NOTE: graphdb viewer will only show 1000 results, but the full output contains more. So you have to export as turtle, and then load it in Protege or smthn
