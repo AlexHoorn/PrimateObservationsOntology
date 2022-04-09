@@ -62,14 +62,17 @@ def page_observations_count():
             options=ranks.index,
             format_func=lambda x: f"{x.title()} - {ranks.loc[x]['count']} observations",
         )
-    with col2:
-        # Select amount to list
-        top_n: int = st.slider("Show top amount", 1, value=25)
 
     # Get the observations for selected rank
     observations = get_obs_rank(ranks.loc[rank_name]["rank"])
     # Count of occurences
     obs_counts = observations["name"].value_counts()
+
+    with col2:
+        # Select amount to list
+        n_kinds = observations["name"].nunique()
+        top_n: int = st.slider("Show top amount", 1, n_kinds, value=min(25, n_kinds))
+
     # Barplot of counts
     st.bar_chart(obs_counts[:top_n])
 
