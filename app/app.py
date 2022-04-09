@@ -6,6 +6,6 @@ if __name__ == "__main__":
     st.set_page_config(layout="wide")
 
     with st.sidebar:
-        page = st.radio("Select page", pages.keys())
+        page: str = st.radio("Select page", pages.keys())
 
     pages[page]()
