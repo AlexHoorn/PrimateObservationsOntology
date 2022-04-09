@@ -13,5 +13,5 @@ with open(config_file, "r", encoding="utf-8") as f:
 sparql_endpoint: str = config["sparql_endpoint"]
 
 
-def sparql_query(query: str) -> DataFrame:
+def sparql_query_df(query: str) -> DataFrame:
     return get_sparql_dataframe(sparql_endpoint, query)
