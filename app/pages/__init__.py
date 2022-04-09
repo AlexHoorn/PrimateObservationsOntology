@@ -1,12 +1,15 @@
 from typing import Callable, Dict
-from .map_all import page_map_all
+
+from .distribution_obs import distribution_obs
+from .homepage import page_home
 from .query_test import page_query_test
 from .sparql_endpoint import sparql_endpoint
-from .distribution_obs import distribution_obs
+from .observations_count import page_observations_count
 
 pages: Dict[str, Callable] = {
-    "All observations": page_map_all,
-    "Query test": page_query_test,
-    "Sparql Endpoint": sparql_endpoint,
+    "🏠 Homepage": page_home,
+    "📊 Observation counts": page_observations_count,
     "Distribution of Observations": distribution_obs
+    "🧪 Query test": page_query_test,
+    "🔬 Sparql Endpoint": sparql_endpoint,
 }

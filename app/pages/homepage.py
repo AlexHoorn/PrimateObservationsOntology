@@ -2,6 +2,7 @@ import pandas as pd
 import streamlit as st
 from os import path
 
+
 # Uses CSV in this example, shouldn't later on
 @st.cache
 def load_data() -> pd.DataFrame:
@@ -12,10 +13,13 @@ def load_data() -> pd.DataFrame:
     return df
 
 
-def page_map_all():
+def page_home():
     with st.spinner("Loading data"):
         df = load_data()
 
-    st.title("Overview of Observations")
+    st.title("🏠 Homepage")
+    st.write("⬅ Use the sidebar to navigate our app.")
+
+    st.header("Map of all observations")
     st.write(f"Data contains {len(df)} observations of Primates.")
     st.map(df)
