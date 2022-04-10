@@ -41,15 +41,14 @@ def get_all_taxons() -> pd.DataFrame:
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX ncbitaxon: <http://purl.obolibrary.org/obo/ncbitaxon#>
     PREFIX dwc: <http://rs.tdwg.org/dwc/terms/>
-    SELECT ?taxon ?name WHERE {
+    SELECT DISTINCT ?taxon ?name WHERE {
         ?obs a dwc:Occurrence ;
             a ?taxon .
         ?taxon ncbitaxon:has_rank ?rank ;
             rdfs:label ?name .
     }
     """
-
-    df = sparql_query_df(query).set_index("name")
+    df = sparql_query_df(query).set_index("name").sort_index()
 
     return df
 
@@ -62,7 +61,7 @@ def page_observations_trend():
         "Monthly": "M",
         "Daily": "D",
     }
-    period = periods[st.radio("Period to show", periods.keys())]
+    period = periods[st.radio("Period to show", periods.keys(), index=1)]
 
     with st.spinner():
         observations = get_obs_dates()
@@ -93,8 +92,6 @@ def page_observations_trend():
     taxons = get_all_taxons()
 
     taxon_uri = taxons.loc[st.selectbox("Select taxon", taxons.index)]["taxon"]
-
-    st.write(taxon_uri)
 
     with st.spinner():
         taxon_observations = get_obs_dates(taxon_uri)
