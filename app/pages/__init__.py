@@ -11,7 +11,7 @@ pages: Dict[str, Callable] = {
     "🏠 Homepage": page_home,
     "📊 Observation counts": page_observations_count,
     "Distribution of Observations": distribution_obs,
-    "Trend of observations": page_observations_trend,
+    "📈 Trend of observations": page_observations_trend,
     "🧪 Query test": page_query_test,
     "🔬 Sparql Endpoint": sparql_endpoint,
 }
