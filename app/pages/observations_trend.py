@@ -10,7 +10,7 @@ def get_obs_dates() -> pd.DataFrame:
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX ncbitaxon: <http://purl.obolibrary.org/obo/ncbitaxon#>
     PREFIX dwc: <http://rs.tdwg.org/dwc/terms/>
-    SELECT DISTINCT ?obs ?date WHERE {
+    SELECT * WHERE {
         ?obs a dwc:Occurrence ;
             dwc:eventDate ?date .
     }
