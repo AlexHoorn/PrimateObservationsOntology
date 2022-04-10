@@ -1,11 +1,12 @@
+import math
 import os
+from decimal import Decimal
 from os import path
 
-import yaml
-import pandas as pd
-from SPARQLWrapper import get_sparql_dataframe
 import pandas as pd
 import streamlit as st
+import yaml
+from SPARQLWrapper import get_sparql_dataframe
 
 config_file = path.join(path.dirname(__file__), os.pardir, "config.yaml")
 
@@ -22,6 +23,9 @@ def sparql_query_df(query: str, chunksize=10000) -> pd.DataFrame:
 
         while True:
             query_chunk = query + f"OFFSET {i*chunksize} LIMIT {chunksize}"
+
+            print(query_chunk)
+
             chunk = get_sparql_dataframe(sparql_endpoint, query_chunk)
             curr_size = len(chunk)
 
@@ -40,12 +44,40 @@ def sparql_query_df(query: str, chunksize=10000) -> pd.DataFrame:
         result: pd.DataFrame = pd.concat(chunks, ignore_index=True)
 
         return result
-    
+
+    except Exception as e:
+        # This should be logged instead as calls to this are generally cached
+        # st.write("Error in SPARQL Call!")
+        raise e
+
+
+def og_sparql_query_df(query: str) -> pd.DataFrame:
+    try:
+        return get_sparql_dataframe(sparql_endpoint, query)
     except:
         st.write("Error in SPARQL Call!")
 
-def og_sparql_query_df(query:str) -> pd.DataFrame:
-    try:
-        return get_sparql_dataframe(sparql_endpoint,query)
-    except:
-        st.write("Error in SPARQL Call!")
+
+def remove_exponent(d):
+    """Remove exponent."""
+    return d.quantize(Decimal(1)) if d == d.to_integral() else d.normalize()
+
+
+# Shamelessly taken from https://github.com/azaitsev/millify
+def millify(n, precision=0, drop_nulls=True):
+    """Humanize number."""
+    millnames = ["", "k", "M", "B", "T", "P", "E", "Z", "Y"]
+    n = float(n)
+    
+    millidx = max(
+        0,
+        min(
+            len(millnames) - 1, int(math.floor(0 if n == 0 else math.log10(abs(n)) / 3))
+        ),
+    )
+    result = f"{n / 10 ** (3 * millidx):.{precision}f}"
+
+    if drop_nulls:
+        result = remove_exponent(Decimal(result))
+
+    return f"{result}{millnames[millidx]}"
