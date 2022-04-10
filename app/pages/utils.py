@@ -2,7 +2,7 @@ import os
 from os import path
 
 import yaml
-from pandas import DataFrame
+import pandas as pd
 from SPARQLWrapper import get_sparql_dataframe
 import pandas as pd
 import streamlit as st
@@ -15,35 +15,37 @@ with open(config_file, "r", encoding="utf-8") as f:
 sparql_endpoint: str = config["sparql_endpoint"]
 
 
-def sparql_query_df(query: str) -> DataFrame:
-    
+def sparql_query_df(query: str, chunksize=10000) -> pd.DataFrame:
     try:
-        l_retdf = []
-        i=0
+        chunks = []
+        i = 0
 
-        while(True):
-            qry = query + f"offset {i} limit 10000"
-            
-            df = get_sparql_dataframe(sparql_endpoint, qry)
-            
-            if(len(df) > 0):
-                l_retdf.append(df)
+        while True:
+            query_chunk = query + f"OFFSET {i*chunksize} LIMIT {chunksize}"
+            chunk = get_sparql_dataframe(sparql_endpoint, query_chunk)
+            curr_size = len(chunk)
+
+            if curr_size > 0:
+                chunks.append(chunk)
             else:
+                # Break if we get an empty result
                 break
-            i+=10000
 
-        for df in l_retdf[1:]:
-            l_retdf[0] = pd.concat(objs=[l_retdf[0],df],ignore_index=True)
+            if curr_size < chunksize:
+                # Break if we are at the last page
+                break
 
-        return l_retdf[0]
+            i += 1
 
+        result: pd.DataFrame = pd.concat(chunks, ignore_index=True)
+
+        return result
+    
     except:
         st.write("Error in SPARQL Call!")
 
-
-def og_sparql_query_df(query:str) -> DataFrame:
+def og_sparql_query_df(query:str) -> pd.DataFrame:
     try:
         return get_sparql_dataframe(sparql_endpoint,query)
     except:
         st.write("Error in SPARQL Call!")
-

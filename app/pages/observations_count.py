@@ -29,25 +29,23 @@ def get_ranks() -> DataFrame:
 
 @st.cache
 def get_obs_rank(rank: str) -> DataFrame:
-    
     query = f"""
-        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-        PREFIX ncbitaxon: <http://purl.obolibrary.org/obo/ncbitaxon#>
-        PREFIX dwc: <http://rs.tdwg.org/dwc/terms/>
-        SELECT * WHERE {{
-            ?obs a dwc:Occurrence ;
-                a ?kind .
-            ?kind ncbitaxon:has_rank <{rank}> ;
-                rdfs:label ?name .
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX ncbitaxon: <http://purl.obolibrary.org/obo/ncbitaxon#>
+    PREFIX dwc: <http://rs.tdwg.org/dwc/terms/>
+    SELECT * WHERE {{
+        ?obs a dwc:Occurrence ;
+            a ?kind .
+        ?kind ncbitaxon:has_rank <{rank}> ;
+            rdfs:label ?name .
 
-            OPTIONAL{{?obs dwc:decimalLatitude ?lat}}
-            OPTIONAL{{?obs dwc:decimalLongitude ?lon}}
-        }}
+        OPTIONAL{{?obs dwc:decimalLatitude ?lat}}
+        OPTIONAL{{?obs dwc:decimalLongitude ?lon}}
+    }}
     """
+    df = sparql_query_df(query)
 
-    rank_df = sparql_query_df(query)
-    
-    return rank_df
+    return df
 
 
 def page_observations_count():
