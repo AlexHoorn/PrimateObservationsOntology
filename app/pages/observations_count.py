@@ -29,35 +29,23 @@ def get_ranks() -> DataFrame:
 
 @st.cache
 def get_obs_rank(rank: str) -> DataFrame:
-    l_retdf = []
-    i=0
+    query = f"""
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX ncbitaxon: <http://purl.obolibrary.org/obo/ncbitaxon#>
+    PREFIX dwc: <http://rs.tdwg.org/dwc/terms/>
+    SELECT * WHERE {{
+        ?obs a dwc:Occurrence ;
+            a ?kind .
+        ?kind ncbitaxon:has_rank <{rank}> ;
+            rdfs:label ?name .
 
-    while(True):
-        query = f"""
-        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-        PREFIX ncbitaxon: <http://purl.obolibrary.org/obo/ncbitaxon#>
-        PREFIX dwc: <http://rs.tdwg.org/dwc/terms/>
-        SELECT * WHERE {{
-            ?obs a dwc:Occurrence ;
-                a ?kind .
-            ?kind ncbitaxon:has_rank <{rank}> ;
-                rdfs:label ?name .
+        OPTIONAL{{?obs dwc:decimalLatitude ?lat}}
+        OPTIONAL{{?obs dwc:decimalLongitude ?lon}}
+    }}
+    """
+    df = sparql_query_df(query)
 
-            OPTIONAL{{?obs dwc:decimalLatitude ?lat}}
-            OPTIONAL{{?obs dwc:decimalLongitude ?lon}}
-        }} offset {i} limit 10000
-        """
-        df = sparql_query_df(query)
-        if(len(df) > 0):
-            l_retdf.append(df)
-        else:
-            break
-        i+=10000
-
-    for df in l_retdf[1:]:
-        l_retdf[0] = pd.concat(objs=[l_retdf[0],df],ignore_index=True)
-
-    return l_retdf[0]
+    return df
 
 
 def page_observations_count():
