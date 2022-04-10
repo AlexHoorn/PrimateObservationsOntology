@@ -1,25 +1,44 @@
 import pandas as pd
 import streamlit as st
-from os import path
+from .utils import sparql_query_df
 
 
-# Uses CSV in this example, shouldn't later on
 @st.cache
-def load_data() -> pd.DataFrame:
-    file_path = path.join(path.dirname(__file__), "data", "obs_data_taxon_ID.csv")
-    df = pd.read_csv(file_path, index_col=0)
-    df.rename({"latitude": "lat", "longitude": "lon"}, axis=1, inplace=True)
+def get_obs_count() -> int:
+    query = """
+    PREFIX dwc: <http://rs.tdwg.org/dwc/terms/>
+    SELECT (COUNT(?obs) as ?count) WHERE {
+        ?obs a dwc:Occurrence .
+    }
+    """
+    count: int = sparql_query_df(query).iloc[0]["count"]
+
+    return count
+
+
+@st.cache
+def get_obs_locs() -> pd.DataFrame:
+    query = """
+    PREFIX dwc: <http://rs.tdwg.org/dwc/terms/>
+    SELECT * WHERE {
+        ?obs a dwc:Occurrence .
+        OPTIONAL{?obs dwc:decimalLatitude ?lat}
+        OPTIONAL{?obs dwc:decimalLongitude ?lon}
+    }
+    """
+    df = sparql_query_df(query)
 
     return df
 
 
 def page_home():
     with st.spinner("Loading data"):
-        df = load_data()
+        count = get_obs_count()
+        df = get_obs_locs()
 
     st.title("🏠 Homepage")
     st.write("⬅ Use the sidebar to navigate our app.")
 
     st.header("Map of all observations")
-    st.write(f"Data contains {len(df)} observations of Primates.")
+    st.write(f"Data contains {count} observations of Primates.")
     st.map(df)
