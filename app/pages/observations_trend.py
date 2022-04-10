@@ -41,7 +41,7 @@ def get_all_taxons() -> pd.DataFrame:
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX ncbitaxon: <http://purl.obolibrary.org/obo/ncbitaxon#>
     PREFIX dwc: <http://rs.tdwg.org/dwc/terms/>
-    SELECT DISTINCT ?taxon ?name WHERE {
+    SELECT ?taxon ?name WHERE {
         ?obs a dwc:Occurrence ;
             a ?taxon .
         ?taxon ncbitaxon:has_rank ?rank ;

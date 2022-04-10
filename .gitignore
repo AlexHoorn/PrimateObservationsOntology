@@ -131,4 +131,4 @@ dmypy.json
 
 hierarchy.txt
 allCountries.txt
-config.yaml
+app/config.yaml

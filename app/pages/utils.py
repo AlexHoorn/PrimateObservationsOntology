@@ -14,7 +14,6 @@ with open(config_file, "r", encoding="utf-8") as f:
 
 sparql_endpoint: str = config["sparql_endpoint"]
 
-
 def sparql_query_df(query: str, chunksize=10000) -> pd.DataFrame:
     try:
         chunks = []
@@ -41,8 +40,11 @@ def sparql_query_df(query: str, chunksize=10000) -> pd.DataFrame:
 
         return result
     
-    except:
-        st.write("Error in SPARQL Call!")
+    except Exception as e:
+        # This should be logged instead as calls to this are generally cached
+        # st.write("Error in SPARQL Call!")
+        raise e
+
 
 def og_sparql_query_df(query:str) -> pd.DataFrame:
     try:
