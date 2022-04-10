@@ -1,6 +1,5 @@
 from pandas import DataFrame
 import streamlit as st
-import pandas as pd
 
 from .utils import sparql_query_df
 
@@ -72,13 +71,15 @@ def page_observations_count():
     with col2:
         # Select amount to list
         n_kinds = observations["name"].nunique()
-        if(n_kinds > 1):
-            top_n: int = st.slider("Show top amount", 1, n_kinds, value=min(25, n_kinds))
+        if n_kinds > 1:
+            top_n: int = st.slider(
+                "Show top amount", 1, n_kinds, value=min(25, n_kinds)
+            )
         else:
             top_n = 1
 
     # Barplot of counts
-    if(top_n>1):
+    if top_n > 1:
         st.bar_chart(obs_counts[:top_n])
 
     st.header("Map of observations")
