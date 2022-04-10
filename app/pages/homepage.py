@@ -1,6 +1,6 @@
 import pandas as pd
 import streamlit as st
-from .utils import sparql_query_df
+from .utils import sparql_query_df, millify
 
 
 @st.cache
@@ -60,8 +60,8 @@ def page_home():
     st.header("Summary of observations")
 
     col1, col2, col3 = st.columns(3)
-    col1.metric("Amount of observations", f"{get_obs_count():,}")
-    col2.metric("Amount of taxons", f"{get_taxon_count():,}")
-    col3.metric("Amount of locations", f"{get_location_count():,}")
+    col1.metric("Amount of observations", millify(get_obs_count(), 1))
+    col2.metric("Amount of taxons", millify(get_taxon_count(), 1))
+    col3.metric("Amount of locations", millify(get_location_count(), 1))
 
     st.map(locations)
