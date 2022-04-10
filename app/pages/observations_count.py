@@ -61,6 +61,7 @@ def page_observations_count():
             "Select rank",
             options=ranks.index,
             format_func=lambda x: f"{x.title()} - {ranks.loc[x]['count']} observations",
+            index=ranks.index.tolist().index("species"),
         )
 
     # Get the observations for selected rank
