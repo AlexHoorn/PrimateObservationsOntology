@@ -8,7 +8,7 @@ from .observations_count import get_ranks, get_obs_rank
 
 
 def split_into_groups(df:pd.DataFrame) -> Tuple[list, list]:
-    raw_df = df
+    raw_df = df.copy()
     raw_df.sort_values(by="name",inplace=True,ignore_index=True)
     raw_df_grouped = raw_df.groupby(by="name")
     df_lst = []

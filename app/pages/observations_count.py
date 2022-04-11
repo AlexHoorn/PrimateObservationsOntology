@@ -26,7 +26,7 @@ def get_ranks() -> DataFrame:
     return df
 
 
-#@st.cache
+@st.cache
 def get_obs_rank(rank: str) -> DataFrame:
     query = f"""
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
