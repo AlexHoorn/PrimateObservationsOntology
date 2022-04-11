@@ -130,3 +130,6 @@ dmypy.json
 
 
 app/config.yaml
+
+#macOS stuff
+.DS_Store
