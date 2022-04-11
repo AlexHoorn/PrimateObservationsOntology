@@ -2,7 +2,6 @@ PyYAML == 6.0
 SPARQLWrapper == 2.0.0
 colorcet == 3.0.0
 haversine == 2.5.1
-matplotlib == 3.5.0
 numpy == 1.21.2
 pandas == 1.4.2
 pydeck == 0.7.1

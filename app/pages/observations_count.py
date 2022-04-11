@@ -2,7 +2,6 @@ import colorcet as cc
 import numpy as np
 import pydeck as pdk
 import streamlit as st
-from matplotlib.pyplot import colormaps
 from pandas import DataFrame
 
 from .utils import map_style_selector, sparql_query_df
@@ -24,12 +23,10 @@ def get_ranks() -> DataFrame:
         ?rank rdfs:label ?rankLabel .
     }
     GROUP BY ?rank ?rankLabel
+    HAVING (?kindCount > 1 || ?rankLabel = "order")
+    ORDER BY DESC(?count) ASC(?kindCount)
     """
-    df = (
-        sparql_query_df(query).set_index("rankLabel")
-        # Trying to (semi-succesfully) mimick the rank order
-        .sort_values(["count", "kindCount"], ascending=[False, True])
-    )
+    df = sparql_query_df(query).set_index("rankLabel")
 
     return df
 
@@ -56,14 +53,19 @@ def get_obs_rank(rank: str) -> DataFrame:
     return df
 
 
+def format_rank(rank, ranks) -> str:
+    return (
+        f"{rank.title()}: "
+        + f"{ranks.loc[rank]['count']} observations, "
+        + f"{ranks.loc[rank]['kindCount']} taxons"
+    )
+
+
 def page_observations_count():
     st.title("📊 Observation counts")
 
     # Ranks and their counts of observations
     ranks = get_ranks()
-
-    # We're only interested when there are multiple kinds
-    ranks = ranks[ranks["kindCount"] > 1]
 
     col1, col2 = st.columns([1, 1])
 
@@ -72,18 +74,16 @@ def page_observations_count():
         rank_name: str = st.selectbox(
             "Select rank",
             options=ranks.index,
-            format_func=lambda x: f"{x.title()} - {ranks.loc[x]['count']} observations",
+            format_func=lambda x: format_rank(x, ranks),
             index=ranks.index.tolist().index("species"),
         )
 
     # Get the observations for selected rank
     observations = get_obs_rank(ranks.loc[rank_name]["rank"])
-    # Count of occurences
-    obs_counts = observations["name"].value_counts()
 
     with col2:
         # Select amount to list
-        n_kinds = observations["name"].nunique()
+        n_kinds = int(ranks.loc[rank_name]["kindCount"])
         if n_kinds > 1:
             top_n: int = st.slider(
                 "Show top amount", 1, n_kinds, value=min(25, n_kinds)
@@ -91,21 +91,20 @@ def page_observations_count():
         else:
             top_n = 1
 
-    # Barplot of counts
     if top_n > 1:
-        st.bar_chart(obs_counts[:top_n])
+        # Barplot of counts
+        st.bar_chart(observations["name"].value_counts()[:top_n])
 
     st.header("Map of observations")
 
     # Select the kinds to show on the map
     kinds = st.multiselect(
-        f"Select {rank_name}",
+        f"Select{rank_name}",
         sorted(observations["name"].unique()),
-        default=obs_counts[:top_n].index.tolist(),
     )
 
     if kinds:
-        observations = observations[observations["name"].isin(kinds)]
+        observations = observations[observations["name"].isin(kinds)].copy()
     else:
         observations = observations.copy()
 
