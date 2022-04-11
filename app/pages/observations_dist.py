@@ -4,6 +4,8 @@ from .utils import sparql_query_df
 import pandas as pd
 import numpy as np
 
+from haversine import haversine
+
 from .observations_count import get_ranks, get_obs_rank
 
 
@@ -23,74 +25,43 @@ def split_into_groups(df:pd.DataFrame) -> Tuple[list, list]:
     
     return (sub_type_list, df_lst)
 
-def idx_max(lst:list) -> int:
-    idx=0
-    max=lst[0]
-    for ele in lst:
-        if ele>max:
-            idx=lst.index(ele)
-            max=lst[idx]
+
+def ret_mat_dist(pts_list:list) -> np.ndarray:
+    m = len(pts_list)
+    ans = np.zeros((m,m))
+    for i in range(m):
+        for j in range(i+1,m):
+            ans[i,j] = haversine(pts_list[i],pts_list[j])
+
+    ans = np.add(ans,np.transpose(ans))
+    return ans
+
+def get_max_idx(ar:np.ndarray) -> Tuple[list,float]:
+    max_ele_idx = np.where(ar == np.amax(ar))
+    dist = ar[max_ele_idx[0][0],max_ele_idx[0][1]]
+    idx_list = [max_ele_idx[0][0],max_ele_idx[0][1]]
+    return (idx_list,dist)
+
+
+def get_max_dist_obs(df:pd.DataFrame) -> pd.DataFrame:
+    lst_points = [(x,y) for x,y in zip(df['lat'],df['lon'])]
+
+    dist_mat = ret_mat_dist(lst_points)
+    st.header("Distance Calculation Matrix : ")
+    st.write(dist_mat)
+    (max_idx,max_dist) = get_max_idx(dist_mat)
     
-    return idx
+    row1 = df.iloc[max_idx[0]]
+    row2 = df.iloc[max_idx[1]]
 
-def haversine_np(lon1, lat1, lon2, lat2):
-    """
-    Calculate the great circle distance between two points
-    on the earth (specified in decimal degrees)
+    dict_temp ={"ObservationID":[row1['obs'],row2['obs']],
+    "lat":[row1['lat'],row2['lat']],
+    "lon":[row1['lon'],row2['lon']],
+    "Distance":[max_dist,max_dist]}
+    
 
-    All args must be of equal length.    
-
-    """
-    lon1, lat1, lon2, lat2 = map(np.radians, [lon1, lat1, lon2, lat2])
-
-    dlon = lon2 - lon1
-    dlat = lat2 - lat1
-
-    a = np.sin(dlat/2.0)**2 + np.cos(lat1) * np.cos(lat2) * np.sin(dlon/2.0)**2
-
-    c = 2 * np.arcsin(np.sqrt(a))
-    km = 6367 * c
-    return km
-
-def calc_max_dist(df:pd.DataFrame) -> pd.DataFrame:
-    p_df = df
-    #p_list = [[lat,lon] for lat,lon in zip(p_df['lat'],p_df['lon'])]
-    p_lon = [lon for lon in p_df['lon']]
-    p_lat = [lat for lat in p_df['lat']]
-    max_d_list = []
-    max_p2_lat = []
-    max_p2_lon = []
-    max_obs_name = []
-    for i in range(len(p_lon)):
-        t_list_lon = []
-        t_list_lat = []
-        for j in range(len(p_lon)):
-            t_list_lat.append(p_lat[i])
-            t_list_lon.append(p_lon[i])
-        
-        d_list = haversine_np(t_list_lon,t_list_lat,p_lon,p_lat)
-        
-        idx = idx_max(d_list.tolist())
-        max_d_list.append(d_list[idx])
-        max_p2_lat.append(p_lat[idx])
-        max_p2_lon.append(p_lon[idx])
-        max_obs_name.append(p_df.iloc[idx]['obs'])
-
-    p_df.insert(len(p_df.columns),column="Max Distance",value=max_d_list)
-    p_df.insert(len(p_df.columns),column="2nd Point ObsId",value=max_obs_name)
-    p_df.insert(len(p_df.columns),column="2nd Point Lat",value=max_p2_lat)
-    p_df.insert(len(p_df.columns),column="2nd Point Lon",value=max_p2_lon)
-
-    return p_df
-
-def get_max_dist_entry(df:pd.DataFrame) -> pd.DataFrame:
-    res = df.iloc[[df['Max Distance'].idxmax()]]
-    t_dict={"Observation ID":[res['obs'].values[0],res['2nd Point ObsId'].values[0]],
-    "lat":[res['lat'].values[0],res['2nd Point Lat'].values[0]],
-    "lon":[res['lon'].values[0],res['2nd Point Lon'].values[0]],
-    "Distance":[res['Max Distance'].values[0],res['Max Distance'].values[0]]}
-    final_res = pd.DataFrame(data=t_dict)
-    return final_res
+    ans_df=pd.DataFrame(dict_temp)
+    return ans_df
 
 
 def page_observations_dist() -> None:
@@ -123,11 +94,8 @@ def page_observations_dist() -> None:
         submitted = st.form_submit_button(label="Show Farthest Observations!")
 
         if(submitted):
-            df_with_dist = calc_max_dist(df_lst[sub_type_list.index(sub_type_select)])
+            final_res = get_max_dist_obs(df_lst[sub_type_list.index(sub_type_select)])
         
-            
-            final_res = get_max_dist_entry(df_with_dist)
-
             st.header("Observation Details : ")
             st.write(f"Distance : {round(final_res['Distance'].values[0],3)} Km")
             st.dataframe(final_res)
