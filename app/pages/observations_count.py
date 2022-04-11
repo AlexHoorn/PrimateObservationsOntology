@@ -1,5 +1,8 @@
+import colorcet as cc
+import numpy as np
 import pydeck as pdk
 import streamlit as st
+from matplotlib.pyplot import colormaps
 from pandas import DataFrame
 
 from .utils import map_style_selector, sparql_query_df
@@ -11,17 +14,21 @@ def get_ranks() -> DataFrame:
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX ncbitaxon: <http://purl.obolibrary.org/obo/ncbitaxon#>
     PREFIX dwc: <http://rs.tdwg.org/dwc/terms/>
-    SELECT ?rank ?rankLabel (COUNT(?rank) as ?count) WHERE {
+    SELECT ?rank ?rankLabel
+        (COUNT(?rank) as ?count)
+        (COUNT(DISTINCT ?kind) as ?kindCount)
+    WHERE {
         ?obs a dwc:Occurrence ;
-            a / ncbitaxon:has_rank ?rank .
+            a ?kind.
+        ?kind ncbitaxon:has_rank ?rank .
         ?rank rdfs:label ?rankLabel .
     }
     GROUP BY ?rank ?rankLabel
     """
     df = (
-        sparql_query_df(query)
-        .set_index("rankLabel")
-        .sort_values("count", ascending=False)
+        sparql_query_df(query).set_index("rankLabel")
+        # Trying to (semi-succesfully) mimick the rank order
+        .sort_values(["count", "kindCount"], ascending=[False, True])
     )
 
     return df
@@ -44,6 +51,7 @@ def get_obs_rank(rank: str) -> DataFrame:
     }}
     """
     df = sparql_query_df(query)
+    df["name"] = df["name"].astype("category")
 
     return df
 
@@ -53,6 +61,9 @@ def page_observations_count():
 
     # Ranks and their counts of observations
     ranks = get_ranks()
+
+    # We're only interested when there are multiple kinds
+    ranks = ranks[ranks["kindCount"] > 1]
 
     col1, col2 = st.columns([1, 1])
 
@@ -92,21 +103,28 @@ def page_observations_count():
         sorted(observations["name"].unique()),
         default=obs_counts[:top_n].index.tolist(),
     )
-    observations_selection = observations[observations["name"].isin(kinds)]
+
+    if kinds:
+        observations = observations[observations["name"].isin(kinds)]
+    else:
+        observations = observations.copy()
 
     # Create the map properties
     view = pdk.data_utils.compute_view(observations[["lon", "lat"]])
-    color_map = pdk.data_utils.assign_random_colors(observations_selection['name'])
-    observations_selection["color"] = observations_selection["name"].apply(color_map.get)
+    # Not sexy but gets the job done with decent performance and makes the colors consistent
+    color_map = np.array(cc.glasbey_bw) * 255
+    observations["color"] = observations["name"].cat.codes.apply(
+        lambda x: color_map[x].tolist()
+    )
 
     observations_layer = pdk.Layer(
         "ScatterplotLayer",
-        data=observations_selection,
+        data=observations,
         get_position=["lon", "lat"],
         pickable=True,
         opacity=0.8,
         radius_min_pixels=3,
-        get_fill_color="color"
+        get_fill_color="color",
     )
 
     # Create the actual map

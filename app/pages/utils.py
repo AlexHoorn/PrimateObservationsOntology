@@ -25,8 +25,8 @@ def get_endpoint() -> str:
 
 def map_style_selector() -> str:
     map_styles = {
-        pdk.map_styles.SATELLITE: "Satellite",
         pdk.map_styles.CARTO_LIGHT: "Cartographic",
+        pdk.map_styles.SATELLITE: "Satellite",
     }
     map_style: str = st.radio(
         "Map style", map_styles.keys(), format_func=lambda x: map_styles[x]
