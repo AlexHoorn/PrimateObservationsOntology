@@ -76,51 +76,82 @@ def get_max_dist_obs(df:pd.DataFrame) -> pd.DataFrame:
 
 def page_observations_dist() -> None:
     
+    pd.set_option('mode.chained_assignment',None)
+    
     st.title("🌐 Spread of Observations")
     
     ranks = get_ranks()
 
     ranks = ranks[ranks["kindCount"] > 10]
     
-    col1, col2 = st.columns([1,1])
-
-    with col1:
-        rank_name: str = st.selectbox(
-            "Select rank",
+    rank_name: str = st.selectbox(
+            "Select Rank : ",
             options=ranks.index,
             format_func=lambda x: f"{x.title()} - {ranks.loc[x]['count']} observations, {ranks.loc[x]['kindCount']} taxons",
-        )
+    )
     
     observations = get_obs_rank(ranks.loc[rank_name]["rank"])
 
     (sub_type_list, df_lst) = split_into_groups(observations)
     
-    with col2:
+    col1, col2 = st.columns([1,1])
+    
+    with col1:
         sub_type_select = st.selectbox(
-            f"Select {rank_name}",
+            f"Select {rank_name.title()} 1 : ",
+            options=sub_type_list
+        )
+        
+    with col2:
+        sub_type_select2 = st.selectbox(
+            f"Select {rank_name.title()} 2 : ",
             options=sub_type_list
         )
     
-    final_res = get_max_dist_obs(df_lst[sub_type_list.index(sub_type_select)])
 
-    st.header("Observation Details for 2 Farthest Locations : ")
-    st.markdown(f"**Max Distance : {round(final_res['Distance'].values[0],3)} Km**")
-    final_res.drop("Distance",inplace=True,axis=1)
-    st.dataframe(final_res)
+    if(sub_type_select != sub_type_select2):
+        final_res = get_max_dist_obs(df_lst[sub_type_list.index(sub_type_select)])
+        final_res2 = get_max_dist_obs(df_lst[sub_type_list.index(sub_type_select2)])
+    else:
+        final_res = get_max_dist_obs(df_lst[sub_type_list.index(sub_type_select)])
+        final_res2 = final_res.copy()
+
+    final_res3 = pd.concat([final_res,final_res2],ignore_index=True)
+
+    final_res3.insert(len(final_res3.columns),"order_no",[1,1,2,2])
+
+    final_res3 = final_res3.astype({"order_no":"category"})
+    
+    st.header(f"Comparison of Max Spread between {sub_type_select.title()} and {sub_type_select2.title()} :")
+    
+    col3,col4 = st.columns([1,1])
+
+    with col3:
+        st.markdown(f"**{rank_name.title()} Name : {sub_type_select.title()}**")
+        st.markdown(f"**Max Distance : {round(final_res['Distance'].values[0],3)} Km**")
+        final_res.drop("Distance",inplace=True,axis=1)
+        st.dataframe(final_res)
+    
+    with col4:
+        st.markdown(f"**{rank_name.title()} Name : {sub_type_select2.title()}**")
+        st.markdown(f"**Max Distance : {round(final_res2['Distance'].values[0],3)} Km**")
+        final_res2.drop("Distance",inplace=True,axis=1)
+        st.dataframe(final_res2)
+
+    
     st.header("Visualisation on Map : ")
     
-    final_res = final_res.astype({"ObservationID":"category"})
     # Create the map properties
-    view = pdk.data_utils.compute_view(final_res[["lon", "lat"]])
+    view = pdk.data_utils.compute_view(final_res3[["lon", "lat"]])
     # Not sexy but gets the job done with decent performance and makes the colors consistent
-    color_map = np.array(cc.glasbey_bw_minc_20_hue_330_100) * 255
-    final_res["color"] = final_res["ObservationID"].cat.codes.apply(
+    color_map = np.array(cc.glasbey_bw) * 255
+    final_res3["color"] = final_res3["order_no"].cat.codes.apply(
         lambda x: color_map[x].tolist()
     )
 
     observations_layer = pdk.Layer(
         "ScatterplotLayer",
-        data=final_res,
+        data=final_res3,
         get_position=["lon", "lat"],
         pickable=True,
         opacity=0.8,
