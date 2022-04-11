@@ -1,8 +1,11 @@
 from typing import Tuple
 import streamlit as st
-from .utils import sparql_query_df
 import pandas as pd
 import numpy as np
+import pydeck as pdk
+import colorcet as cc
+
+from .utils import map_style_selector
 
 from haversine import haversine
 
@@ -37,7 +40,7 @@ def ret_mat_dist(pts_list:list) -> np.ndarray:
     return ans
 
 def get_max_idx(ar:np.ndarray) -> Tuple[list,float]:
-    max_ele_idx = np.where(ar == np.amax(ar))
+    max_ele_idx = np.where(ar == np.nanmax(ar))
     dist = ar[max_ele_idx[0][0],max_ele_idx[0][1]]
     idx_list = [max_ele_idx[0][0],max_ele_idx[0][1]]
     return (idx_list,dist)
@@ -47,8 +50,6 @@ def get_max_dist_obs(df:pd.DataFrame) -> pd.DataFrame:
     lst_points = [(x,y) for x,y in zip(df['lat'],df['lon'])]
 
     dist_mat = ret_mat_dist(lst_points)
-    st.header("Distance Calculation Matrix : ")
-    st.write(dist_mat)
     (max_idx,max_dist) = get_max_idx(dist_mat)
     
     row1 = df.iloc[max_idx[0]]
@@ -66,10 +67,12 @@ def get_max_dist_obs(df:pd.DataFrame) -> pd.DataFrame:
 
 def page_observations_dist() -> None:
     
-    st.title("Observations Distribution")
+    st.title("🌐 Spread of Observations")
     
     ranks = get_ranks()
 
+    ranks = ranks[ranks["kindCount"] > 10]
+    
     col1, col2 = st.columns([1,1])
 
     with col1:
@@ -89,17 +92,53 @@ def page_observations_dist() -> None:
             options=sub_type_list
         )
     
-    with st.form("calc_obs_dist"):
+    #with st.form("calc_obs_dist"):
         
-        submitted = st.form_submit_button(label="Show Farthest Observations!")
+        #submitted = st.form_submit_button(label="Show Farthest Observations!")
 
-        if(submitted):
-            final_res = get_max_dist_obs(df_lst[sub_type_list.index(sub_type_select)])
-        
-            st.header("Observation Details : ")
-            st.write(f"Distance : {round(final_res['Distance'].values[0],3)} Km")
-            st.dataframe(final_res)
-            st.header("Visualisation on Map : ")
-            st.map(final_res)
+        #if(submitted):
+
+    final_res = get_max_dist_obs(df_lst[sub_type_list.index(sub_type_select)])
+
+    st.header("Observation Details for 2 Farthest Locations : ")
+    st.markdown(f"**Max Distance : {round(final_res['Distance'].values[0],3)} Km**")
+    final_res.drop("Distance",inplace=True,axis=1)
+    st.dataframe(final_res)
+    st.header("Visualisation on Map : ")
+    
+    final_res = final_res.astype({"ObservationID":"category"})
+    # Create the map properties
+    view = pdk.data_utils.compute_view(final_res[["lon", "lat"]])
+    # Not sexy but gets the job done with decent performance and makes the colors consistent
+    color_map = np.array(cc.glasbey_bw) * 255
+    final_res["color"] = final_res["ObservationID"].cat.codes.apply(
+        lambda x: color_map[x].tolist()
+    )
+
+    observations_layer = pdk.Layer(
+        "ScatterplotLayer",
+        data=final_res,
+        get_position=["lon", "lat"],
+        pickable=True,
+        opacity=0.8,
+        radius_min_pixels=3,
+        get_fill_color="color",
+    )
+
+    # Create the actual map
+    r = pdk.Deck(
+        layers=[observations_layer],
+        initial_view_state=view,
+        map_provider="mapbox",
+        map_style=map_style_selector(),
+        tooltip={"text": "{name}"},
+    )
+
+    # Show the map
+    st.pydeck_chart(r)
+
+
+
+            #st.map(final_res)
 
     return
