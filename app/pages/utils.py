@@ -1,19 +1,38 @@
 import math
 import os
 from decimal import Decimal
+from functools import cache
 from os import path
 
 import pandas as pd
+import pydeck as pdk
 import streamlit as st
 import yaml
 from SPARQLWrapper import get_sparql_dataframe
 
-config_file = path.join(path.dirname(__file__), os.pardir, "config.yaml")
 
-with open(config_file, "r", encoding="utf-8") as f:
-    config = yaml.safe_load(f)
+@cache
+def get_endpoint() -> str:
+    config_file = path.join(path.dirname(__file__), os.pardir, "config.yaml")
 
-sparql_endpoint: str = config["sparql_endpoint"]
+    with open(config_file, "r", encoding="utf-8") as f:
+        config = yaml.safe_load(f)
+
+    sparql_endpoint: str = config["sparql_endpoint"]
+
+    return sparql_endpoint
+
+
+def map_style_selector() -> str:
+    map_styles = {
+        pdk.map_styles.SATELLITE: "Satellite",
+        pdk.map_styles.CARTO_LIGHT: "Cartographic",
+    }
+    map_style: str = st.radio(
+        "Map style", map_styles.keys(), format_func=lambda x: map_styles[x]
+    )
+
+    return map_style
 
 
 def sparql_query_df(query: str, chunksize=10000) -> pd.DataFrame:
@@ -26,7 +45,7 @@ def sparql_query_df(query: str, chunksize=10000) -> pd.DataFrame:
 
             print(query_chunk)
 
-            chunk = get_sparql_dataframe(sparql_endpoint, query_chunk)
+            chunk = get_sparql_dataframe(get_endpoint(), query_chunk)
             curr_size = len(chunk)
 
             if curr_size > 0:
@@ -68,7 +87,7 @@ def millify(n, precision=0, drop_nulls=True):
     """Humanize number."""
     millnames = ["", "k", "M", "B", "T", "P", "E", "Z", "Y"]
     n = float(n)
-    
+
     millidx = max(
         0,
         min(

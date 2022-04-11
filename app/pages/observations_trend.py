@@ -1,7 +1,9 @@
 from datetime import timedelta
 from typing import Optional
+
 import pandas as pd
 import streamlit as st
+
 from .utils import sparql_query_df
 
 
