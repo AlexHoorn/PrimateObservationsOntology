@@ -1,7 +1,7 @@
 import math
 import os
 from decimal import Decimal
-from functools import cache
+from functools import lru_cache
 from os import path
 
 import pandas as pd
@@ -11,7 +11,7 @@ import yaml
 from SPARQLWrapper import get_sparql_dataframe
 
 
-@cache
+@lru_cache
 def get_endpoint() -> str:
     config_file = path.join(path.dirname(__file__), os.pardir, "config.yaml")
 
@@ -72,7 +72,7 @@ def sparql_query_df(query: str, chunksize=10000) -> pd.DataFrame:
 
 def og_sparql_query_df(query: str) -> pd.DataFrame:
     try:
-        return get_sparql_dataframe(sparql_endpoint, query)
+        return get_sparql_dataframe(get_endpoint(), query)
     except:
         st.write("Error in SPARQL Call!")
 
