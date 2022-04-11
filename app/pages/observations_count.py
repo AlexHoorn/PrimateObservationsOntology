@@ -1,7 +1,8 @@
-from pandas import DataFrame
+import pydeck as pdk
 import streamlit as st
+from pandas import DataFrame
 
-from .utils import sparql_query_df
+from .utils import map_style_selector, sparql_query_df
 
 
 @st.cache
@@ -91,5 +92,31 @@ def page_observations_count():
         sorted(observations["name"].unique()),
         default=obs_counts[:top_n].index.tolist(),
     )
+    observations_selection = observations[observations["name"].isin(kinds)]
+
+    # Create the map properties
+    view = pdk.data_utils.compute_view(observations[["lon", "lat"]])
+    color_map = pdk.data_utils.assign_random_colors(observations_selection['name'])
+    observations_selection["color"] = observations_selection["name"].apply(color_map.get)
+
+    observations_layer = pdk.Layer(
+        "ScatterplotLayer",
+        data=observations_selection,
+        get_position=["lon", "lat"],
+        pickable=True,
+        opacity=0.8,
+        radius_min_pixels=3,
+        get_fill_color="color"
+    )
+
+    # Create the actual map
+    r = pdk.Deck(
+        layers=[observations_layer],
+        initial_view_state=view,
+        map_provider="mapbox",
+        map_style=map_style_selector(),
+        tooltip={"text": "{name}"},
+    )
+
     # Show the map
-    st.map(observations[observations["name"].isin(kinds)])
+    st.pydeck_chart(r)

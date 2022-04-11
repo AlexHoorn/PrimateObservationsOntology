@@ -1,6 +1,8 @@
 import pandas as pd
+import pydeck as pdk
 import streamlit as st
-from .utils import sparql_query_df, millify
+
+from .utils import map_style_selector, millify, sparql_query_df
 
 
 @st.cache
@@ -64,4 +66,20 @@ def page_home():
     col2.metric("Amount of taxons", millify(get_taxon_count(), 1))
     col3.metric("Amount of locations", millify(get_location_count(), 1))
 
-    st.map(locations)
+    locations_layer = pdk.Layer(
+        "HeatmapLayer",
+        data=locations,
+        get_position=["lon", "lat"],
+        opacity=0.8,
+    )
+
+    view = pdk.data_utils.compute_view(locations[["lon", "lat"]])
+
+    r = pdk.Deck(
+        layers=[locations_layer],
+        initial_view_state=view,
+        map_provider="mapbox",
+        map_style=map_style_selector(),
+    )
+
+    st.pydeck_chart(r)
