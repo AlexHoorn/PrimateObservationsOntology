@@ -39,18 +39,27 @@ def ret_mat_dist(pts_list:list) -> np.ndarray:
     ans = np.add(ans,np.transpose(ans))
     return ans
 
-def get_max_idx(ar:np.ndarray) -> Tuple[list,float]:
-    max_ele_idx = np.where(ar == np.nanmax(ar))
-    dist = ar[max_ele_idx[0][0],max_ele_idx[0][1]]
-    idx_list = [max_ele_idx[0][0],max_ele_idx[0][1]]
-    return (idx_list,dist)
+
+def get_max_ele(ar:np.ndarray) -> Tuple[list,float]:
+    max = ar[0,0]
+    (m,n) = ar.shape
+    max_idx = [0,0]
+    for i in range(m):
+        for j in range(i+1,n):
+            if ar[i,j] > max:
+                max = ar[i,j]
+                max_idx = [i,j]
+    
+    return(max_idx,max)
 
 
 def get_max_dist_obs(df:pd.DataFrame) -> pd.DataFrame:
+    
     lst_points = [(x,y) for x,y in zip(df['lat'],df['lon'])]
 
     dist_mat = ret_mat_dist(lst_points)
-    (max_idx,max_dist) = get_max_idx(dist_mat)
+    
+    (max_idx,max_dist) = get_max_ele(dist_mat)
     
     row1 = df.iloc[max_idx[0]]
     row2 = df.iloc[max_idx[1]]
@@ -79,7 +88,7 @@ def page_observations_dist() -> None:
         rank_name: str = st.selectbox(
             "Select rank",
             options=ranks.index,
-            format_func=lambda x: f"{x.title()} - {ranks.loc[x]['count']} observations",
+            format_func=lambda x: f"{x.title()} - {ranks.loc[x]['count']} observations, {ranks.loc[x]['kindCount']} taxons",
         )
     
     observations = get_obs_rank(ranks.loc[rank_name]["rank"])
@@ -92,12 +101,6 @@ def page_observations_dist() -> None:
             options=sub_type_list
         )
     
-    #with st.form("calc_obs_dist"):
-        
-        #submitted = st.form_submit_button(label="Show Farthest Observations!")
-
-        #if(submitted):
-
     final_res = get_max_dist_obs(df_lst[sub_type_list.index(sub_type_select)])
 
     st.header("Observation Details for 2 Farthest Locations : ")
@@ -110,7 +113,7 @@ def page_observations_dist() -> None:
     # Create the map properties
     view = pdk.data_utils.compute_view(final_res[["lon", "lat"]])
     # Not sexy but gets the job done with decent performance and makes the colors consistent
-    color_map = np.array(cc.glasbey_bw) * 255
+    color_map = np.array(cc.glasbey_bw_minc_20_hue_330_100) * 255
     final_res["color"] = final_res["ObservationID"].cat.codes.apply(
         lambda x: color_map[x].tolist()
     )
@@ -125,7 +128,6 @@ def page_observations_dist() -> None:
         get_fill_color="color",
     )
 
-    # Create the actual map
     r = pdk.Deck(
         layers=[observations_layer],
         initial_view_state=view,
@@ -134,11 +136,6 @@ def page_observations_dist() -> None:
         tooltip={"text": "{name}"},
     )
 
-    # Show the map
     st.pydeck_chart(r)
-
-
-
-            #st.map(final_res)
 
     return
