@@ -132,3 +132,6 @@ dmypy.json
 hierarchy.txt
 allCountries.txt
 app/config.yaml
+
+#macOS stuff
+.DS_Store
