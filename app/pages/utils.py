@@ -43,7 +43,7 @@ def sparql_query_df(query: str, chunksize=10000) -> pd.DataFrame:
         while True:
             query_chunk = query + f"OFFSET {i*chunksize} LIMIT {chunksize}"
 
-            print(query_chunk)
+            #print(query_chunk)
 
             chunk = get_sparql_dataframe(get_endpoint(), query_chunk)
             curr_size = len(chunk)
@@ -62,6 +62,7 @@ def sparql_query_df(query: str, chunksize=10000) -> pd.DataFrame:
 
         result: pd.DataFrame = pd.concat(chunks, ignore_index=True)
 
+        print("SPARQL Query : Success")
         return result
 
     except Exception as e:
