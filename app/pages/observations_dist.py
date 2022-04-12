@@ -118,7 +118,7 @@ def page_observations_dist() -> None:
 
     final_res3 = pd.concat([final_res,final_res2],ignore_index=True)
 
-    final_res3.insert(len(final_res3.columns),"order_no",[1,1,2,2])
+    final_res3.insert(len(final_res3.columns),"order_no",[sub_type_select,sub_type_select,sub_type_select2,sub_type_select2])
 
     final_res3 = final_res3.astype({"order_no":"category"})
     
@@ -164,7 +164,7 @@ def page_observations_dist() -> None:
         initial_view_state=view,
         map_provider="mapbox",
         map_style=map_style_selector(),
-        tooltip={"text": "{name}"},
+        tooltip={"text": "{order_no}"},
     )
 
     st.pydeck_chart(r)
