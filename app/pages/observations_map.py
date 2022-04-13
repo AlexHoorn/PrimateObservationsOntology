@@ -54,7 +54,7 @@ def get_obs_rank(rank: str) -> DataFrame:
     return df
 
 
-def format_rank_title(rank:Series) -> str:
+def format_rank_title(rank: Series) -> str:
     return (
         f"{rank.name.title()}: "
         + f"{rank['count']} observations, "
@@ -75,7 +75,7 @@ def page_observations_count():
         rank_name: str = st.selectbox(
             "Select rank",
             options=ranks.index,
-            format_func=lambda x: ranks.loc[x,"title"],
+            format_func=lambda x: ranks.loc[x, "title"],
             index=ranks.index.tolist().index("species"),
         )
 

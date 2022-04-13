@@ -1,9 +1,9 @@
 from datetime import timedelta
 from typing import Optional
 
+import altair as alt
 import pandas as pd
 import streamlit as st
-import altair as alt
 
 from .observations_map import get_ranks
 from .utils import sparql_query_df

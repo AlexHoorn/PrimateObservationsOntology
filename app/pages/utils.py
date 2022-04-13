@@ -1,3 +1,4 @@
+import logging
 import math
 import os
 from decimal import Decimal
@@ -9,8 +10,6 @@ import pydeck as pdk
 import streamlit as st
 import yaml
 from SPARQLWrapper import get_sparql_dataframe
-
-import logging
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
