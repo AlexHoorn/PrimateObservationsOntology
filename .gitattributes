@@ -1,3 +1,4 @@
 data/observations.ttl filter=lfs diff=lfs merge=lfs -text
 data/geonames/geonames.ttl filter=lfs diff=lfs merge=lfs -text
 ontology/primate_taxonomy.owl filter=lfs diff=lfs merge=lfs -text
+ontology/primate_taxonomy.ttl filter=lfs diff=lfs merge=lfs -text
