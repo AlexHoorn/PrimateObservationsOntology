@@ -9,7 +9,7 @@ from .utils import map_style_selector
 
 from haversine import haversine
 
-from .observations_count import get_ranks, get_obs_rank
+from .observations_map import get_ranks, get_obs_rank
 
 
 def split_into_groups(df:pd.DataFrame) -> Tuple[list, list]:

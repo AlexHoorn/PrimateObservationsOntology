@@ -9,7 +9,7 @@ def query_db_callback(qry:str) -> None:
     res_obj = og_sparql_query_df(qry)
     st.dataframe(res_obj)
     
-def sparql_endpoint() -> None:
+def page_sparql_endpoint() -> None:
 
     with st.form("sparql_endpoint_form"):
     

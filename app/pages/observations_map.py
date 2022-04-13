@@ -2,7 +2,7 @@ import colorcet as cc
 import numpy as np
 import pydeck as pdk
 import streamlit as st
-from pandas import DataFrame
+from pandas import DataFrame, Series
 
 from .utils import map_style_selector, sparql_query_df
 
@@ -27,6 +27,7 @@ def get_ranks() -> DataFrame:
     ORDER BY DESC(?count) ASC(?kindCount)
     """
     df = sparql_query_df(query).set_index("rankLabel")
+    df["title"] = df.apply(format_rank_title, axis=1)
 
     return df
 
@@ -53,16 +54,16 @@ def get_obs_rank(rank: str) -> DataFrame:
     return df
 
 
-def format_rank(rank, ranks) -> str:
+def format_rank_title(rank:Series) -> str:
     return (
-        f"{rank.title()}: "
-        + f"{ranks.loc[rank]['count']} observations, "
-        + f"{ranks.loc[rank]['kindCount']} taxons"
+        f"{rank.name.title()}: "
+        + f"{rank['count']} observations, "
+        + f"{rank['kindCount']} taxons"
     )
 
 
 def page_observations_count():
-    st.title("📊 Observation counts")
+    st.title("🌍 Observation Map")
 
     # Ranks and their counts of observations
     ranks = get_ranks()
@@ -74,7 +75,7 @@ def page_observations_count():
         rank_name: str = st.selectbox(
             "Select rank",
             options=ranks.index,
-            format_func=lambda x: format_rank(x, ranks),
+            format_func=lambda x: ranks.loc[x,"title"],
             index=ranks.index.tolist().index("species"),
         )
 
@@ -95,11 +96,9 @@ def page_observations_count():
         # Barplot of counts
         st.bar_chart(observations["name"].value_counts()[:top_n])
 
-    st.header("Map of observations")
-
     # Select the kinds to show on the map
     kinds = st.multiselect(
-        f"Select{rank_name}",
+        f"Show only {rank_name}",
         sorted(observations["name"].unique()),
     )
 
