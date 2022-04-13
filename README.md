@@ -1,7 +1,7 @@
 
 # Info
 the basic taxonomy ontology is the  NCBI taxonomy classification, converted to RDF.
-The taxonomic class ID equivalencies are extracted from Wikidata. Wikidata keeps a reference of equivalent class ID's across naming authorities. for example, NCBI ID 9606 = ITIS ID 180092).
+The taxonomic class ID equivalencies are extracted from Wikidata. Wikidata keeps a reference of equivalent class ID's across naming authorities (for example, NCBI ID 9606 = ITIS ID 180092).
 Naming authorities considered here are Encyclopedia of Life (EOL), iNaturalist, ITIS and GBIF.
 The actual instances are extracted from iNaturalist, and are mapped to the right NCBI taxon via their NCBI Taxon ID. 
 
