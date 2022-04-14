@@ -8,7 +8,7 @@ import streamlit as st
 from haversine import haversine
 
 from .observations_map import get_obs_rank, get_ranks
-from .utils import map_style_selector
+from .utils import map_style_selector, logger
 
 
 def split_into_groups(df: pd.DataFrame) -> Tuple[list, list]:
@@ -28,13 +28,20 @@ def split_into_groups(df: pd.DataFrame) -> Tuple[list, list]:
 
 
 def ret_mat_dist(pts_list: list) -> np.ndarray:
+    
     m = len(pts_list)
+    logger.info(
+        f"Calculating Distance Matrix, Size : {m} by {m}"
+    )
     ans = np.zeros((m, m))
     for i in range(m):
         for j in range(i + 1, m):
             ans[i, j] = haversine(pts_list[i], pts_list[j])
 
     ans = np.add(ans, np.transpose(ans))
+    logger.info(
+        "Distance Matrix Calculated"
+    )
     return ans
 
 
@@ -77,7 +84,7 @@ def page_observations_dist() -> None:
 
     pd.set_option("mode.chained_assignment", None)
 
-    st.title("🌐 Spread of Observations")
+    st.title("🔃 Observations Spread")
 
     ranks = get_ranks()
 

@@ -59,7 +59,7 @@ def get_taxons(rank: str) -> pd.DataFrame:
 
 
 def page_observations_trend():
-    st.title("Trend of observations")
+    st.title("📈 Observations Trend")
     col1, col2 = st.columns(2)
 
     # Period aggregation to choose
