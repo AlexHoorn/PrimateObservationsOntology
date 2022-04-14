@@ -121,6 +121,10 @@ def page_observations_trend():
         )
     ]["taxon"]
 
+    # Select all if selection is empty
+    if len(taxon_uris) == 0:
+        taxon_uris = taxons["taxon"].tolist()
+
     # Collect observations for selected taxons
     taxons_observations = [get_obs_dates(taxon) for taxon in taxon_uris]
 
