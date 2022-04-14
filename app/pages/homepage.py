@@ -57,14 +57,14 @@ def page_home():
     st.title("🏠 Homepage")
     st.write("⬅ Use the sidebar to navigate our app.")
 
-    locations = get_obs_locs()
-
     st.header("Summary of observations")
 
     col1, col2, col3 = st.columns(3)
     col1.metric("Amount of observations", millify(get_obs_count(), 1))
     col2.metric("Amount of taxons", millify(get_taxon_count(), 1))
     col3.metric("Amount of locations", millify(get_location_count(), 1))
+
+    locations = get_obs_locs()
 
     locations_layer = pdk.Layer(
         "HeatmapLayer",
