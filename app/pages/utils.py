@@ -1,3 +1,4 @@
+import logging
 import math
 import os
 from decimal import Decimal
@@ -9,6 +10,9 @@ import pydeck as pdk
 import streamlit as st
 import yaml
 from SPARQLWrapper import get_sparql_dataframe
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 @lru_cache
@@ -43,7 +47,9 @@ def sparql_query_df(query: str, chunksize=10000) -> pd.DataFrame:
         while True:
             query_chunk = query + f"OFFSET {i*chunksize} LIMIT {chunksize}"
 
-            print(query_chunk)
+            logger.info(
+                "Executing SPARQL %s \n", query_chunk
+            )  # lazy-% formatting deliberate
 
             chunk = get_sparql_dataframe(get_endpoint(), query_chunk)
             curr_size = len(chunk)
@@ -85,7 +91,7 @@ def remove_exponent(d):
 # Shamelessly taken from https://github.com/azaitsev/millify
 def millify(n, precision=0, drop_nulls=True):
     """Humanize number."""
-    millnames = ["", "k", "M", "B", "T", "P", "E", "Z", "Y"]
+    millnames = tuple(["", "k", "M", "B", "T", "P", "E", "Z", "Y"])
     n = float(n)
 
     millidx = max(
