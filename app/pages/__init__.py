@@ -8,7 +8,7 @@ from .sparql_endpoint import page_sparql_endpoint
 
 pages: Dict[str, Callable] = {
     "🏠 Homepage": page_home,
-    "🌍 Observation Map": page_observations_count,
+    "🌍 Observations Map": page_observations_count,
     "🔃 Observations Spread": page_observations_dist,
     "📈 Observations Trend": page_observations_trend,
     "🧪 Sparql Endpoint": page_sparql_endpoint,

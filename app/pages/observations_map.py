@@ -63,7 +63,7 @@ def format_rank_title(rank: Series) -> str:
 
 
 def page_observations_count():
-    st.title("🌍 Observation Map")
+    st.title("🌍 Observations Map")
 
     # Ranks and their counts of observations
     ranks = get_ranks()
@@ -91,6 +91,7 @@ def page_observations_count():
             )
         else:
             top_n = 1
+
 
     if top_n > 1:
         # Barplot of counts

@@ -11,6 +11,8 @@ def query_db_callback(qry: str) -> None:
 
 def page_sparql_endpoint() -> None:
 
+    st.title("🧪 Sparql Endpoint")
+    
     with st.form("sparql_endpoint_form"):
 
         qry = st.text_area("Type in your SPARQL Query Below : ")
