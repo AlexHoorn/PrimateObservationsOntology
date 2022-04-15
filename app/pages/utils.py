@@ -78,9 +78,13 @@ def sparql_query_df(query: str, chunksize=10000) -> pd.DataFrame:
 
 def og_sparql_query_df(query: str) -> pd.DataFrame:
     try:
+        logger.info(
+                "Executing SPARQL %s \n", query
+            )  # lazy-% formatting deliberate
         return get_sparql_dataframe(get_endpoint(), query)
-    except:
-        st.write("Error in SPARQL Call!")
+        
+    except Exception as e:
+        raise e
 
 
 def remove_exponent(d):
