@@ -17,9 +17,10 @@ The actual instances are extracted from iNaturalist, and are mapped to the right
 
 4. Change "sparql_endpoint : sparql_endpoint_address" in app/config.yaml to "sparql_endpoint : YOUR_LOCAL_SPARQL_REPO_ADDRESS". In GraphDB, this address can be found in Setup->Repositories tab.
 
-5. Install the required python dependences in your python installation/virtual environment using app/requirements.txt.
-
-Example Syntax : pip install -r requirements.txt
+5. Install the required python dependences in your python installation/virtual environment using app/requirements.txt. Example syntax :
+```
+pip install -r requirements.txt
+```
 
 6. Voila! Run the app from the terminal using "streamlit run app.py" in the app directory.
 
