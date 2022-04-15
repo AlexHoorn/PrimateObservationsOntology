@@ -1,7 +1,9 @@
+PREFIX ex: <http://example.org/>
 PREFIX dc: <http://purl.org/dc/terms/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
 PREFIX sf: <http://www.opengis.net/ont/sf#>
 PREFIX dwc: <http://rs.tdwg.org/dwc/terms/>
 PREFIX gn: <https://www.geonames.org/ontology#>
@@ -9,12 +11,14 @@ prefix skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX wdt: <http://www.wikidata.org/prop/direct/>
 PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
 
-### note: this query assumes you have the ncbi taxonomy saved into the named graph <http://ex.org/graph1>, the wikidata class equivalences in <http://ex.org/wikidata> and the observations ttl file as <http://ex.org/triples_full>. It will merge the graphs into <http://ex.org/merged_graph>
+### note: this query assumes you have the ncbi taxonomy saved into the named graph <http://ex.org/graph1>, and the observations ttl file as <http://ex.org/triples_full>. It will merge the two graphs into <http://ex.org/merged_graph>
 
-#graph operations like these tend to get stuck. If they do, run copy, add and insert separately
-
+DROP GRAPH <http://ex.org/merged_graph>; #delete prev
+CREATE GRAPH <http://ex.org/merged_graph>; #init empty graph
+COPY <http://ex.org/graph1> TO <http://ex.org/merged_graph>; # copy ncbi taxonomy into it
+# and also insert newly created obs data into new graph
 INSERT { 
-    GRAPH <http://ex.org/merged_graph2> {
+    GRAPH <http://ex.org/merged_graph> {
         #insert attributes of observations, and attribute them to the right NCBI taxon
         ?obs a dwc:Occurrence, ?class;
              dwc:occurrenceID ?obs_id;
@@ -26,10 +30,19 @@ INSERT {
 
         #specify that geonames ID is a geonames Location (maybe redundant)
         ?gn_id a dc:Location, gn:Location.
+
+        #also define equivalent classes using SKOS, if applicable
+        ?class skos:exactMatch ?wikidata_entity.
+        ?class skos:exactMatch ?inat_uri.
+        ?class skos:exactMatch ?GBIF_uri.
+        ?class skos:exactMatch ?itis_uri.
+        ?class skos:exactMatch ?eol_uri.
+
     }
 }
-WHERE { GRAPH <http://ex.org/triples_full> {
-        ?obs a dwc:Occurrence;
+WHERE { 
+    GRAPH <http://ex.org/triples_full> {
+        ?obs a dwc:Occurrence, ?class;
              dwc:occurrenceID ?obs_id;
              dwc:eventDate ?date;
              dwc:recordedByID ?user ;
@@ -37,15 +50,33 @@ WHERE { GRAPH <http://ex.org/triples_full> {
              dwc:decimalLatitude ?lat;
              dwc:decimalLongitude ?long.
 
-        ?gn_id a dc:Location, gn:Location .
+        ?gn_id a dc:Location, gn:Location.
 
-        #from the id, construct complete identifier to match NCBI syntax
         BIND(CONCAT("NCBITaxon:", ?obs_id) as ?classid)
     }
 
-    graph <http://ex.org/graph1> {
+    GRAPH <http://ex.org/graph1> {
         ?class rdf:type owl:Class; # get all classes in NCBI taxonomy
                oboInOwl:id ?classid.  #ID must match with the class id defined above
+    }
+
+    #search for equivalent taxon in Wikidata, via ncbi ID
+    SERVICE <https://query.wikidata.org/sparql> {
+        #first, match local ncbi id with the correct wikidata entity
+        OPTIONAL {?wikidata_entity wdt:P685 ?wd_NCBI_id.
+            #number 0 means not found, not an actual ID
+            FILTER(?wd_NCBI_id = ?number1)}
+        #then, via wikidata, get other id's and bind their URI's
+        OPTIONAL { ?wikidata_entity wdt:P3151 ?iNaturalist_taxon_ID. 
+            BIND(IRI(concat("https://www.inaturalist.org/taxa/", ?iNaturalist_taxon_ID)) as ?inat_uri)}
+        OPTIONAL { ?wikidata_entity wdt:P846 ?GBIF_taxon_ID. 
+            BIND(IRI(concat("https://www.gbif.org/species/", ?GBIF_taxon_ID)) as ?GBIF_uri)}
+        OPTIONAL { ?wikidata_entity wdt:P815 ?ITIS_TSN. 
+            BIND(IRI(concat("https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value=", ?ITIS_TSN)) as ?itis_uri)}
+        OPTIONAL { ?wikidata_entity wdt:P830 ?EOL_ID. 
+            BIND(IRI(concat("https://eol.org/pages/", ?EOL_ID)) as ?eol_uri)}
+
+
     }
 }
 
