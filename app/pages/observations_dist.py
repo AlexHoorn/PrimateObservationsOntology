@@ -38,7 +38,7 @@ def ret_mat_dist(pts_list: list) -> np.ndarray:
         for j in range(i + 1, m):
             ans[i, j] = haversine(pts_list[i], pts_list[j])
 
-    ans = np.add(ans, np.transpose(ans))
+    #ans = np.add(ans, np.transpose(ans))
     logger.info(
         "Distance Matrix Calculated"
     )
