@@ -24,7 +24,7 @@ Method 2(use Docker):
 
 1. install docker and initialize docker.
 2. clone this repository.(if app's load speed is too low,you can also use graphDB and change
-sparql_endpoint_address" in app/config.yaml )
+"sparql_endpoint_address" in app/config.yaml )
 3. build image (there is . in the end of this command)
 ```shell script
 docker build -t streamlitapp:latest . 
