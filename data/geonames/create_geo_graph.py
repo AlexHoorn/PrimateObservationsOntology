@@ -1,3 +1,6 @@
+# NOTE
+# If you wish to run this file then you will need to manually download allCountries.txt and hierarchy.txt
+# from the GeoNames download server: https://download.geonames.org/export/dump/
 import logging
 from os import path
 
@@ -115,6 +118,6 @@ if __name__ == "__main__":
     g.serialize(path.join(base_dir, "geonames.ttl"), format="turtle")
 
     # Store processed dataframes for later use
-    logging.info("Saving processed data to csv")
-    countries.to_csv(path.join(base_dir, "allCountries_processed.csv"))
-    relations.to_csv(path.join(base_dir, "hierarchy_processed.csv"), index=False)
+    # logging.info("Saving processed data to csv")
+    # countries.to_csv(path.join(base_dir, "allCountries_processed.csv"))
+    # relations.to_csv(path.join(base_dir, "hierarchy_processed.csv"), index=False)
