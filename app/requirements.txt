@@ -1,8 +1,9 @@
 PyYAML == 6.0
 SPARQLWrapper == 2.0.0
+altair == 4.2.0
 colorcet == 3.0.0
 haversine == 2.5.1
-numpy == 1.21.2
+numpy == 1.22.3
 pandas == 1.4.2
 pydeck == 0.7.1
 streamlit == 1.8.1
