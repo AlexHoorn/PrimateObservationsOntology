@@ -6,34 +6,40 @@ Naming authorities considered here are Encyclopedia of Life (EOL), iNaturalist, 
 The actual instances are extracted from iNaturalist, and are mapped to the right NCBI taxon via their NCBI Taxon ID. 
 
 # WebApp Installation and Execution :
-Method 1:
 
-1.clone the repository and install the requirements.
+## Method 1 (without Docker):
+
+1. Clone the repository.
+
 2. Make sure GraphDB (or any similar Knowledge Graph hosting server) is installed and running properly on your system.
 
 3. Import our complete ontology from the directory root/ontology, with the name "primate_taxonomy.ttl" into your active GraphDB repository.
 
-4. Change "sparql_endpoint : sparql_endpoint_address" in app/config.yaml to "sparql_endpoint : YOUR_LOCAL_SPARQL_REPO_ADDRESS". In GraphDB, this address can be found in Setup->Repositories tab. 
-5. Install the required python dependences in your python installation/virtual environment using app/requirements.txt.
+4. Change "sparql_endpoint : sparql_endpoint_address" in app/config.yaml to "sparql_endpoint : YOUR_LOCAL_SPARQL_REPO_ADDRESS". In GraphDB, this address can be found in Setup->Repositories tab.
 
-Example Syntax : pip install -r requirements.txt
+5. Install the required python dependences in your python installation/virtual environment using app/requirements.txt. Example syntax :
+```
+pip install -r requirements.txt
+```
 
 6. Voila! Run the app from the terminal using "streamlit run app.py" in the app directory.
 
-Method 2(use Docker):
+## Method 2(with Docker):
 
-1. install docker and initialize docker.
-2. clone this repository.(if app's load speed is too low,you can also use graphDB and change
-"sparql_endpoint_address" in app/config.yaml )
-3. build image (there is . in the end of this command)
+1. Install docker and initialize it.
+
+2. Clone this repository.
+
+3. Build image (there is . in the end of this command)
 ```shell script
 docker build -t streamlitapp:latest . 
 ```
-4. run code
+4. Run code
 ```shell script
 docker run -p 8501:8501 streamlitapp:latest
 ```
-
+5. If app's load speed is too slow or there are gateway timeouts,you can also use your local graphDB installation with our hosted ontology and change
+"sparql_endpoint_address" in app/config.yaml.
 
 
 # Instructions for Recreating our ontology :
